@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -x
 source $OPENSHIFT_PHP_DIR/lib/util
 
 # both nginx and phpfpm configs are rebuilt every deploy
@@ -46,3 +45,13 @@ fi
 
 echo Building magento configuration 1>&2
 /usr/bin/oo-erb ${OPENSHIFT_REPO_DIR}/php/app/etc/local.xml.erb > ${OPENSHIFT_REPO_DIR}/php/app/etc/local.xml
+
+if ! [ ${OPENSHIFT_REDIS_HOST+x} ]; then
+	cat 1>&2 <<-EOF
+	Your Magento is missing Redis (cache) cartridge.
+	It is strongly recommended to add one now:
+
+	$ rhc cartridge add -a $OPENSHIFT_APP_NAME https://reflector-getupcloud.getup.io/reflect?github=smarterclayton/openshift-redis-cart
+	$ rhc ssh $OPENSHIFT_APP_NAME --command 'gear deploy'
+	EOF
+fi

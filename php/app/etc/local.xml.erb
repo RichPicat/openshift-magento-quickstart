@@ -53,6 +53,7 @@
             </default_setup>
         </resources>
         <session_save><![CDATA[db]]></session_save>
+<% if ENV.has_key?('OPENSHIFT_REDIS_HOST') %>
         <cache>
             <backend>Cm_Cache_Backend_Redis</backend>
             <backend_options>
@@ -70,6 +71,7 @@
                 <persistent>1</persistent> <!-- persistence value, 0: not in use, > 0 used as persistence ID -->
             </backend_options>
         </cache>
+<% end %>
     </global>
     <admin>
         <routers>
