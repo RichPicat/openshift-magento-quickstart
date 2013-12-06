@@ -46,7 +46,7 @@ fi
 echo Building magento configuration 1>&2
 /usr/bin/oo-erb ${OPENSHIFT_REPO_DIR}/php/app/etc/local.xml.erb > ${OPENSHIFT_REPO_DIR}/php/app/etc/local.xml
 
-if ! [ ${OPENSHIFT_REDIS_HOST+x} ]; then
+if ! [ ${OPENSHIFT_REDIS_DB_HOST+x} ]; then
 	cat 1>&2 <<-EOF
 	Your Magento is missing Redis (cache) cartridge.
 	It is strongly recommended to add one now:
