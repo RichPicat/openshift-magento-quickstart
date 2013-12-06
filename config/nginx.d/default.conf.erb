@@ -1,6 +1,6 @@
 # based on http://www.magentocommerce.com/wiki/1_-_installation_and_configuration/configuring_nginx_for_magento
 
-map $scheme $fastcgi_https { ## Detect when HTTPS is used
+map $http_x_forwarded_proto $fastcgi_https { ## Detect when HTTPS is used
     default off;
     https on;
 }
