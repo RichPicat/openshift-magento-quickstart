@@ -1,5 +1,6 @@
 #!/bin/bash
 
 if [ -f ${OPENSHIFT_REPO_DIR}/php/app/etc/local.xml ]; then
+	echo 'Compiling magento (this may take some time)' 1>&2
 	php ${OPENSHIFT_REPO_DIR}/php/shell/compiler.php compile
 fi

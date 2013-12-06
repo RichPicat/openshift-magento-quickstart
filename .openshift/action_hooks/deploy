@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 source $OPENSHIFT_PHP_DIR/lib/util
 
 # both nginx and phpfpm configs are rebuilt every deploy
@@ -18,7 +19,7 @@ fi
 
 # check if magento is installed
 if ! mysql -h $OPENSHIFT_MYSQL_DB_HOST -u $OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD -P$OPENSHIFT_MYSQL_DB_PORT $OPENSHIFT_APP_NAME -e "show tables" | grep -q api_user ; then
-	echo Installing magento  1>&2
+	echo 'Installing magento (this may take some time)' 1>&2
 	php -f ${OPENSHIFT_REPO_DIR}php/install.php -- \
 		--license_agreement_accepted "yes" \
 		--locale "pt_BR" \
