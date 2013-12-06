@@ -40,7 +40,7 @@ if ! mysql -h $OPENSHIFT_MYSQL_DB_HOST -u $OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSH
 		--admin_lastname "Magento" \
 		--admin_email "admin@example.com" \
 		--admin_username "admin" \
-		--admin_password "$OPENSHIFT_MAGENTO_PASSWORD"
+		--admin_password "OpenShiftAdmin123"
 fi
 
 echo Building magento configuration 1>&2
