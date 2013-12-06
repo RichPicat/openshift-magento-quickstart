@@ -4,3 +4,44 @@ source $OPENSHIFT_PHP_DIR/lib/util
 
 # both nginx and phpfpm configs are rebuilt every deploy
 build_nginx_config & build_phpfpm_config
+
+# Check and wait for MySQL
+if ! [ ${OPENSHIFT_MYSQL_DB_HOST+x} ]; then
+	cat 1>&2 <<-EOF
+		Could not find mysql database.  Please run:
+		 \$ rhc cartridge add -a $OPENSHIFT_APP_NAME -c mysql-5
+		Followed by:
+		 \$ rhc ssh -a $OPENSHIFT_APP_NAME --command 'gear deploy'
+	EOF
+	exit 5
+fi
+
+# check if magento is installed
+if ! mysql -h $OPENSHIFT_MYSQL_DB_HOST -u $OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD -P$OPENSHIFT_MYSQL_DB_PORT $OPENSHIFT_APP_NAME -e "show tables" | grep -q api_user ; then
+	echo Installing magento  1>&2
+	php -f ${OPENSHIFT_REPO_DIR}php/install.php -- \
+		--license_agreement_accepted "yes" \
+		--locale "pt_BR" \
+		--timezone "America/Sao_Paulo" \
+		--default_currency "BRL" \
+		--db_host "$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT" \
+		--db_name "$OPENSHIFT_APP_NAME" \
+		--db_user "$OPENSHIFT_MYSQL_DB_USERNAME" \
+		--db_pass "$OPENSHIFT_MYSQL_DB_PASSWORD" \
+		--skip_url_validation \
+		--url "http://$OPENSHIFT_APP_DNS" \
+		--use_rewrites "yes" \
+		--use_secure "yes" \
+		--enable_charts \
+		--session_save "db" \
+		--secure_base_url "https://$OPENSHIFT_APP_DNS" \
+		--use_secure_admin "yes" \
+		--admin_firstname "Administrator" \
+		--admin_lastname "Magento" \
+		--admin_email "admin@example.com" \
+		--admin_username "admin" \
+		--admin_password "$OPENSHIFT_MAGENTO_PASSWORD"
+fi
+
+echo Building magento configuration 1>&2
+/usr/bin/oo-erb ${OPENSHIFT_REPO_DIR}/php/app/etc/local.xml.erb > ${OPENSHIFT_REPO_DIR}/php/app/etc/local.xml

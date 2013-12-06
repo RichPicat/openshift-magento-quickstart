@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [ -f ${OPENSHIFT_REPO_DIR}/php/app/etc/local.xml ]; then
+	php ${OPENSHIFT_REPO_DIR}/php/shell/compiler.php compile
+fi
