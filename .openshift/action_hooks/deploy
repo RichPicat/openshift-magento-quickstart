@@ -5,7 +5,7 @@ source $OPENSHIFT_PHP_DIR/lib/util
 # both nginx and phpfpm configs are rebuilt every deploy
 build_nginx_config & build_phpfpm_config
 
-# Check and wait for MySQL
+# check for MySQL
 if ! [ ${OPENSHIFT_MYSQL_DB_HOST+x} ]; then
 	cat 1>&2 <<-EOF
 		Could not find mysql database.  Please run:
@@ -16,7 +16,7 @@ if ! [ ${OPENSHIFT_MYSQL_DB_HOST+x} ]; then
 	exit 5
 fi
 
-# check if magento is installed
+# check magento installation
 if ! mysql -h $OPENSHIFT_MYSQL_DB_HOST -u $OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD -P$OPENSHIFT_MYSQL_DB_PORT $OPENSHIFT_APP_NAME -e "show tables" | grep -q api_user ; then
 	echo 'Installing magento (this may take some time)' 1>&2
 	php -f ${OPENSHIFT_REPO_DIR}php/install.php -- \
@@ -41,6 +41,10 @@ if ! mysql -h $OPENSHIFT_MYSQL_DB_HOST -u $OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSH
 		--admin_email "admin@example.com" \
 		--admin_username "admin" \
 		--admin_password "OpenShiftAdmin123"
+	cat 1>&2 <<-EOF
+		Magento Username: admin
+		Magento Password: OpenShiftAdmin123
+	EOF
 fi
 
 echo Building magento configuration 1>&2
